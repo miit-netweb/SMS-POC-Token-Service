@@ -6,7 +6,10 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import Microservice.Token_Service.exception.ParserException;
 
 import java.security.Key;
 import java.util.Date;
@@ -49,7 +52,7 @@ public class JwtService {
                     .getBody();
             return claims;
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse JWT: " + e.getMessage());
+            throw new ParserException(4444, "Failed to Parse Token", HttpStatus.EXPECTATION_FAILED);
         }
     }
 

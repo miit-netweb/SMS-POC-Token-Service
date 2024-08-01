@@ -1,17 +1,25 @@
 package Microservice.Token_Service.Service;
 
-import Microservice.Token_Service.Entity.PartnerTokenValidation;
-import Microservice.Token_Service.Repository.PartnerTokenValidationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
+import Microservice.Token_Service.Dto.ExceptionResponse;
+import Microservice.Token_Service.Entity.PartnerTokenValidation;
+import Microservice.Token_Service.Repository.PartnerTokenValidationRepository;
+import Microservice.Token_Service.exception.DbException;
 
 @Service
 public class PartnerTokenValidationService {
     @Autowired
     private PartnerTokenValidationRepository partnerTokenValidationRepository;
+    
+    Logger LOGGER=LoggerFactory.getLogger(PartnerTokenValidation.class);
 
     public PartnerTokenValidation isPartnerExpired(long partnerNumber){
         Optional<PartnerTokenValidation> partner = partnerTokenValidationRepository.findById(partnerNumber);
@@ -25,8 +33,11 @@ public class PartnerTokenValidationService {
         try{
             final PartnerTokenValidation save = partnerTokenValidationRepository.save(partner);
             return save;
-        } catch (Exception e){
-            throw new Exception("Unable to create partner-token in DB");
+        } catch (RuntimeException ex){
+		    LOGGER.error("Original exception: {}", ex.getCause().getMessage());
+			
+			String errorMessage = ExceptionResponse.parseErrorMessage(ex.getMessage());
+			throw new DbException(5555, errorMessage, HttpStatus.BAD_REQUEST);
         }
     }
 }
