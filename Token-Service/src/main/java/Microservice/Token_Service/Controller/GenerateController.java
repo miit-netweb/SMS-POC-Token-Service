@@ -34,27 +34,27 @@ public class GenerateController {
     @GetMapping("/token/{partner_number}")
     public ResponseEntity<?> tokenGenerationForPartner(@PathVariable("partner_number") long partnerNumber){
         try{
-            LOGGER.info(String.format("Started creating token for partner number %s",partnerNumber));
+            LOGGER.info("Started creating token for partner number {}",partnerNumber);
             PartnerTokenValidation checkedPartnerToken = partnerTokenValidationService.isPartnerExpired(partnerNumber);
             if(checkedPartnerToken!=null){
                 TokenGenerationResponseDto tokenGenerationResponseDto = new TokenGenerationResponseDto();
                 tokenGenerationResponseDto.setToken(checkedPartnerToken.getToken());
                 tokenGenerationResponseDto.setExpiry(checkedPartnerToken.getExpiry());
-                LOGGER.info(String.format("Saved token return backed for %s", partnerNumber));
+                LOGGER.info("Saved token return backed for {}", partnerNumber);
                 return ResponseEntity.ok(tokenGenerationResponseDto);
             } else {
                 String token = jwtService.generateToken(String.valueOf(partnerNumber));
                 System.out.println(token);
-                if (token.length() > 0) {
-                    LOGGER.info(String.format("Token saved for %s", partnerNumber));
+                if (!token.isEmpty()) {
+                    LOGGER.info("Token saved for {}", partnerNumber);
                     partnerTokenValidationService.addNewPartner(new PartnerTokenValidation(partnerNumber,LocalDateTime.now().plusMinutes(expiryMinutes),token));
                     TokenGenerationResponseDto tokenGenerationResponseDto = new TokenGenerationResponseDto();
                     tokenGenerationResponseDto.setToken(token);
                     tokenGenerationResponseDto.setExpiry(LocalDateTime.now().plusMinutes(expiryMinutes));
-                    LOGGER.info(String.format("Token created for %s", partnerNumber));
+                    LOGGER.info("Token created for {}", partnerNumber);
                     return ResponseEntity.ok(tokenGenerationResponseDto);
                 } else {
-                    LOGGER.error(String.format("Unable to make token for partner Number %s", partnerNumber));
+                    LOGGER.error("Unable to make token for partner Number {}", partnerNumber);
                 }
             }
         }
