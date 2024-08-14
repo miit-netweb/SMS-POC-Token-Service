@@ -64,6 +64,14 @@ public class ExceptionResponse {
 	}
 	public ExceptionResponse() {
 	}
+
+
+
+	@Override
+	public String toString() {
+		return "ExceptionResponse [errorid=" + errorid + ", errorcode=" + errorcode + ", message=" + message
+				+ ", status=" + status + ", timestamp=" + timestamp + "]";
+	}
 	
 	
 }
