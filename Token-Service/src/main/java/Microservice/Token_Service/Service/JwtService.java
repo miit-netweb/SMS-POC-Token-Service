@@ -28,9 +28,10 @@ public class JwtService {
         Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
     }
 
-    public String generateToken(String userName) {
+    public String generateToken(String partnerNumber) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userName);
+        claims.put("partnerNumber", partnerNumber);
+        return createToken(claims, partnerNumber);
     }
 
     private String createToken(Map<String, Object> claims, String userName) {
@@ -43,7 +44,8 @@ public class JwtService {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
-    public Claims validateAndGetClaim(final String token){
+    	public Claims validateAndGetClaim(final String token){
+    	
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getSignKey())
